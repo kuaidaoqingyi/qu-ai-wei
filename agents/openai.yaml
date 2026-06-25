@@ -1,0 +1,6 @@
+interface:
+  display_name: "去 AI 味"
+  short_description: "中文去 AI 味与广播站文风补味"
+  default_prompt: "Use $qu-ai-wei to make this Chinese draft more natural, less AI-like, and closer to my broadcast-writing voice."
+policy:
+  allow_implicit_invocation: true
