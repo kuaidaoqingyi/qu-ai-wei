@@ -1,6 +1,6 @@
 interface:
   display_name: "去 AI 味"
-  short_description: "中文去 AI 味与广播站文风补味"
-  default_prompt: "Use $qu-ai-wei to make this Chinese draft more natural, less AI-like, and closer to my broadcast-writing voice."
+  short_description: "中文去 AI 味、空话清理与快刀青衣文风"
+  default_prompt: "用 $qu-ai-wei 处理这段中文：保住事实、数字、术语、引用和责任主体，删掉空话套话与重复，再按当前文体或我的广播站文风改自然。"
 policy:
   allow_implicit_invocation: true
