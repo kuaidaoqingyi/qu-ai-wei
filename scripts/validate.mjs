@@ -20,7 +20,13 @@ const requiredFiles = [
   "references/ai-cliche-library.md",
   "references/broadcast-style.md",
   "references/kuaidao-voice.md",
+  "references/file-workflow.md",
   "scripts/cliche-log.mjs",
+  "scripts/check-preservation.mjs",
+  "tests/README.md",
+  "tests/cases.json",
+  "tests/review-checklist.json",
+  "tests/check-preservation.test.mjs",
 ];
 
 const generationFiles = [
@@ -45,8 +51,11 @@ const markerChecks = [
   ["SKILL.md", "推断强度"],
   ["SKILL.md", "新增信息红线"],
   ["SKILL.md", "对照模式"],
-  ["SKILL.md", "套话候选持续收集"],
+  ["references/file-workflow.md", "套话候选持续收集"],
+  ["SKILL.md", "编辑优先级"],
+  ["SKILL.md", "文件保护"],
   ["references/ai-bingzao.md", "信息复读"],
+  ["references/ai-bingzao.md", "高风险保留例"],
   ["references/broadcast-style.md", "结尾四选一"],
   ["references/kuaidao-voice.md", "段落跟着思路单元走"],
   ["references/ai-cliche-library.md", "只用于识别"],
@@ -160,6 +169,14 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
+const preservationTests = spawnSync(process.execPath, [
+  "--test", join(root, "tests/check-preservation.test.mjs"),
+], { encoding: "utf8" });
+if (preservationTests.status !== 0) {
+  console.error(preservationTests.stdout + preservationTests.stderr);
+  process.exit(1);
+}
+
 console.log(
-  "Validation passed: required files, output-pattern guard, markers, and cliche collector.",
+  "Static and unit validation passed: skill files, instruction wording, markers, cliche collector, fixtures, and preservation checker. Model rewrites still require separate execution and semantic review.",
 );

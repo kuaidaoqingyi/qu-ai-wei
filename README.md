@@ -1,12 +1,14 @@
 # qu-ai-wei · 去 AI 味
 
-给中文文本做去 AI 味、空话套话清理和“快刀青衣”文风改写的 Codex / Claude skill。
+给中文文本做去 AI 味、空话套话清理和“快刀青衣”文风轻改的 Codex / Claude skill。
+
+默认只改局部词句，保留结构、篇幅、节奏和作者声音。整句删除、压缩、重排或重写，需要用户明确授权。表达编辑不等于事实核查，也不承诺通过 AI 检测器。
 
 处理顺序：
 
-1. 保住事实、数字、术语、引用、责任主体和作者已有经历。
-2. 删除模板、信息复读、感慨膨胀和假深刻。
-3. 公开写作再补对象感、现场、机制和合适的结尾。
+1. 保住事实、数字、术语、引用、责任主体、否定、条件、归因和作者已有经历。
+2. 在当次授权范围内清理套话；轻改时整句删除和重排只列建议。
+3. 文风调整只使用已有材料，不补造现场、机制、因果或作者感受。
 4. 新发现的套话先进入候选日志，重复出现后人工晋升到活库。
 
 ## 结构
@@ -16,9 +18,12 @@
 - `references/ai-cliche-library.md`：已确认的 AI 空话套话活库，只用于识别。
 - `references/broadcast-style.md`：广播站和口播文风。
 - `references/kuaidao-voice.md`：从虎嗅专栏提炼的快刀青衣文风。
+- `references/file-workflow.md`：文件保护、广播站基线和候选收集流程。
 - `scripts/cliche-log.mjs`：候选模板去重、计数和筛选。
-- `scripts/validate.mjs`：规则冲突和收集脚本回归检查。
-- `evals/cases.md`：人工和模型前向测试样本。
+- `scripts/validate.mjs`：技能结构、规则和脚本单元回归检查。
+- `scripts/check-preservation.mjs`：实际改稿输出的机械保留检查。
+- `tests/`：19 个自拟输入、独立审阅清单、校验器单元测试与回归说明。
+- `evals/cases.md`：补充场景样本，遵循同一编辑边界。
 
 ## 安装
 
@@ -29,13 +34,14 @@ SKILL.md
 agents/
 references/
 scripts/
+tests/
 ```
 
 本机 Codex 安装位置：`~/.codex/skills/qu-ai-wei/`。
 
 ## 持续收集空话套话
 
-候选默认写入 `~/.qu-ai-wei/ai-cliche-candidates.json`。广播站工作流使用：
+候选默认写入 `~/.qu-ai-wei/ai-cliche-candidates.json`。需要使用已有项目日志时显式指定路径：
 
 ```bash
 node scripts/cliche-log.mjs add \
@@ -43,7 +49,7 @@ node scripts/cliche-log.mjs add \
   --family "病灶族" \
   --action "默认动作" \
   --source "文本类型" \
-  --file "/Users/luojilab/Personal/01-写作/00-广播站/.qu-ai-wei-baselines/ai-cliche-candidates.json"
+  --file "/path/to/project/.qu-ai-wei-baselines/ai-cliche-candidates.json"
 ```
 
 查看累计 3 次以上的候选：
@@ -58,8 +64,21 @@ node scripts/cliche-log.mjs list --min-count 3 --file "/path/to/ai-cliche-candid
 
 ```bash
 node scripts/validate.mjs
-python3 /path/to/skill-creator/scripts/quick_validate.py .
+node --test tests/check-preservation.test.mjs
 ```
+
+以上只验证结构和脚本。实际改稿须按 [回归说明](tests/README.md) 由独立执行者运行 19 个输入，再做机械检查和逐项语义审阅；不把自动测试通过当作改稿质量保证。
+
+## 本地与 GitHub 同步
+
+维护时同时检查源仓库、活动安装目录和 GitHub `main`，以最后一次已验证的远端提交为共同基线，不按修改时间盲目覆盖。
+
+1. 先读取 Git 状态并获取远端更新。只有一侧变化时同步该侧；同一文件两侧冲突、来源不明或混有其他任务改动时，保留现场并请求确认，不强推、不重置。
+2. 只同步技能规则、运行脚本、自拟测试及仓库说明。真实稿件、语料、基线、候选日志、测试输出、凭证和本机配置均留在本地。
+3. 审查差异和隐私，再运行静态及单元检查。改写规则或行为样本变化时，还须运行独立前向测试及语义审阅。
+4. 经当次或明确持续授权后提交、推送，再回读 GitHub 提交和文件内容，并核对安装目录的共享文件逐字一致。失败时不声称同步完成。
+
+仓库的持续集成会在推送及拉取请求时运行静态与单元检查。定时同步由维护者在自己的环境配置；安装本技能不会自动获得 GitHub 写入权限，也不会自动晋升套话候选。定时检查无变化时保持安静，仅报告成功同步、失败或需要人工处理的冲突。
 
 ## 语料状态
 
